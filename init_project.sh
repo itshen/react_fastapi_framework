@@ -27,7 +27,7 @@ get_project_name() {
     read -p "请输入项目名称 (直接回车将使用随机名称): " USER_PROJECT_NAME
     
     if [ -z "$USER_PROJECT_NAME" ]; then
-        # 生成项目路径（时间戳在前，随机字符串在后）
+        # 生成项目路径（时间戳在前）
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
         PROJECT_DIR="${SCRIPT_DIR}/../${PROJECT_NAME}_${TIMESTAMP}"
     else
@@ -36,9 +36,12 @@ get_project_name() {
         
         # 检查目录是否已存在
         if [ -d "$PROJECT_DIR" ]; then
-            log_error "目录 ${PROJECT_DIR} 已存在，请选择其他名称"
-            get_project_name
-            return
+            log_warning "目录 ${PROJECT_DIR} 已存在，继续执行将覆盖现有内容"
+            read -p "是否继续？(y/N) " confirm
+            if [[ $confirm != [yY] ]]; then
+                get_project_name
+                return
+            fi
         fi
     fi
 }
