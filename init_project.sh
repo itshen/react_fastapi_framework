@@ -67,11 +67,19 @@ prepare_project() {
     mkdir -p "${PROJECT_DIR}/frontend/public"
     mkdir -p "${PROJECT_DIR}/docker/"{nginx,scripts}
     
+    # 添加 .vscode 目录
+    mkdir -p "${PROJECT_DIR}/frontend/.vscode"
+    mkdir -p "${PROJECT_DIR}/backend/.vscode"
+    
     # 复制所有脚本和配置文件
     cp -r "${SCRIPT_DIR}/scripts"/* "${PROJECT_DIR}/scripts/"
     cp "${SCRIPT_DIR}/.gitignore" "${PROJECT_DIR}/"
     cp "${SCRIPT_DIR}/LICENSE" "${PROJECT_DIR}/"
     cp "${SCRIPT_DIR}/README.md" "${PROJECT_DIR}/"
+    
+    # 复制 VS Code 配置文件
+    cp "${SCRIPT_DIR}/frontend/.vscode/launch.json" "${PROJECT_DIR}/frontend/.vscode/"
+    cp "${SCRIPT_DIR}/backend/.vscode/launch.json" "${PROJECT_DIR}/backend/.vscode/"
     
     # 设置脚本执行权限
     chmod +x "${PROJECT_DIR}/scripts/"*.sh
@@ -129,4 +137,7 @@ main() {
 }
 
 # 执行主函数
-main 
+main
+
+# 添加启动脚本执行权限
+chmod +x scripts/launch_front_end.sh scripts/launch_back_end.sh 
