@@ -9,11 +9,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # 导入配置
 source "${SCRIPT_DIR}/scripts/config.sh"
 
-# 生成项目路径（时间戳在前，随机字符串在后）
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RANDOM_STRING=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c 4)
-PROJECT_DIR="${SCRIPT_DIR}/../${PROJECT_NAME}_${TIMESTAMP}_${RANDOM_STRING}"
-
 # 输出函数
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
@@ -25,6 +20,27 @@ log_warning() {
 
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# 询问项目名称
+get_project_name() {
+    read -p "请输入项目名称 (直接回车将使用随机名称): " USER_PROJECT_NAME
+    
+    if [ -z "$USER_PROJECT_NAME" ]; then
+        # 生成项目路径（时间戳在前，随机字符串在后）
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        PROJECT_DIR="${SCRIPT_DIR}/../${PROJECT_NAME}_${TIMESTAMP}"
+    else
+        # 使用用户输入的名称
+        PROJECT_DIR="${SCRIPT_DIR}/../${USER_PROJECT_NAME}"
+        
+        # 检查目录是否已存在
+        if [ -d "$PROJECT_DIR" ]; then
+            log_error "目录 ${PROJECT_DIR} 已存在，请选择其他名称"
+            get_project_name
+            return
+        fi
+    fi
 }
 
 # 检查必要的命令是否存在
@@ -118,7 +134,10 @@ setup_environment() {
 
 # 主函数
 main() {
-    log_info "开始初始化 ${PROJECT_NAME} v${PROJECT_VERSION}"
+    # 获取项目名称
+    get_project_name
+    
+    log_info "开始初始化项目"
     log_info "项目将创建在: ${PROJECT_DIR}"
     
     # 检查要求
